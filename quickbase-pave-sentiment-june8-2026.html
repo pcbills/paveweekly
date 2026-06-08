@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quickbase Pave · Sentiment Report · June 8, 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #111111;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 16px 60px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .pave-root {
+      background: #0a0a0a;
+      color: #ffffff;
+      padding: 40px 36px 48px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 760px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .pave-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; gap: 20px; }
+    .pave-logo-block { flex: 1; }
+    .pave-brand { font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.15em; color: #2ddc7c; text-transform: uppercase; margin-bottom: 8px; }
+    .pave-title { font-size: 30px; font-weight: 700; line-height: 1.15; color: #ffffff; }
+    .pave-subtitle { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 8px; font-weight: 400; }
+
+    .score-col { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+    .pave-score-block { background: #2ddc7c; border-radius: 14px; padding: 18px 24px; text-align: center; min-width: 140px; }
+    .score-label { font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 0.14em; color: #0a3a1c; text-transform: uppercase; font-weight: 500; margin-bottom: 4px; }
+    .score-number { font-size: 52px; font-weight: 700; color: #0a0a0a; line-height: 1; }
+    .score-denom { font-size: 15px; color: rgba(10,10,10,0.5); font-weight: 500; }
+    .score-verdict { margin-top: 8px; font-size: 10px; font-weight: 600; color: #0a3a1c; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    .no-change-badge { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 10px 14px; text-align: center; min-width: 140px; }
+    .nc-icon { font-size: 16px; color: rgba(255,255,255,0.35); margin-bottom: 4px; }
+    .nc-text { font-size: 10px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.3); letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.6; }
+
+    .ratings-row { display: flex; gap: 10px; margin-bottom: 28px; }
+    .rating-pill { background: rgba(45,220,124,0.08); border: 1px solid rgba(45,220,124,0.22); border-radius: 10px; padding: 12px 14px; flex: 1; text-align: center; }
+    .rp-label { font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 400; margin-bottom: 5px; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+    .rp-value { font-size: 21px; font-weight: 700; color: #2ddc7c; }
+    .rp-sub { font-size: 10px; color: rgba(255,255,255,0.28); margin-top: 3px; }
+
+    .divider { height: 1px; background: rgba(255,255,255,0.07); margin: 0 0 24px; }
+
+    .section-label { font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 0.16em; color: #2ddc7c; text-transform: uppercase; font-weight: 500; margin-bottom: 14px; }
+
+    .alert-bar { background: rgba(255,200,66,0.07); border: 1px solid rgba(255,200,66,0.18); border-radius: 10px; padding: 12px 16px; margin-bottom: 24px; display: flex; align-items: flex-start; gap: 12px; }
+    .alert-icon { color: #ffc842; font-size: 17px; flex-shrink: 0; margin-top: 2px; }
+    .alert-text { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.65; }
+    .alert-text strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+
+    .bar-section { margin-bottom: 24px; }
+    .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .bar-label { font-size: 12px; color: rgba(255,255,255,0.5); width: 120px; flex-shrink: 0; }
+    .bar-track { flex: 1; height: 8px; background: rgba(255,255,255,0.07); border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; background: #2ddc7c; }
+    .bar-fill.warn { background: #ffc842; }
+    .bar-fill.danger { background: #ff5c5c; }
+    .bar-fill.up { background: #6ee8a8; }
+    .bar-pct { font-size: 11px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.35); width: 44px; text-align: right; display: flex; align-items: center; justify-content: flex-end; gap: 4px; flex-shrink: 0; }
+    .delta { font-size: 10px; }
+    .delta.up { color: #2ddc7c; }
+    .delta.dn { color: #ff5c5c; }
+    .delta.nc { color: rgba(255,255,255,0.18); }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+    .item-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 14px 16px; }
+    .item-card.issues { border-left: 3px solid #ff5c5c; }
+    .item-card.requests { border-left: 3px solid #ffc842; }
+    .item-card.flagged { border-left: 3px solid #ff8c42; }
+    .item-num { font-size: 11px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.22); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .badge-new { font-size: 9px; background: rgba(255,140,66,0.18); color: #ff8c42; border: 1px solid rgba(255,140,66,0.3); border-radius: 4px; padding: 1px 6px; letter-spacing: 0.07em; font-family: 'DM Mono', monospace; text-transform: uppercase; }
+    .badge-nc { font-size: 9px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.28); border: 1px solid rgba(255,255,255,0.09); border-radius: 4px; padding: 1px 6px; letter-spacing: 0.07em; font-family: 'DM Mono', monospace; text-transform: uppercase; }
+    .item-title { font-size: 13px; font-weight: 600; color: #ffffff; line-height: 1.35; margin-bottom: 5px; }
+    .item-desc { font-size: 11.5px; color: rgba(255,255,255,0.42); line-height: 1.55; }
+
+    .praise-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+    .praise-card { background: rgba(45,220,124,0.06); border: 1px solid rgba(45,220,124,0.15); border-radius: 10px; padding: 14px 14px; }
+    .praise-card.reinforced { border-color: rgba(45,220,124,0.4); background: rgba(45,220,124,0.11); }
+    .praise-icon { font-size: 20px; color: #2ddc7c; margin-bottom: 8px; display: block; }
+    .praise-title { font-size: 12px; font-weight: 600; color: #ffffff; line-height: 1.35; margin-bottom: 4px; }
+    .praise-body { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.55; }
+
+    .tag-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 24px; }
+    .tag { font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; border-radius: 5px; padding: 4px 10px; font-weight: 500; }
+    .tag.pos { background: rgba(45,220,124,0.11); color: #2ddc7c; border: 1px solid rgba(45,220,124,0.22); }
+    .tag.neg { background: rgba(255,92,92,0.09); color: #ff8080; border: 1px solid rgba(255,92,92,0.18); }
+    .tag.neu { background: rgba(255,200,66,0.09); color: #ffd770; border: 1px solid rgba(255,200,66,0.18); }
+    .tag.new { background: rgba(255,140,66,0.1); color: #ff8c42; border: 1px solid rgba(255,140,66,0.22); }
+
+    .sources-section { border-top: 1px solid rgba(255,255,255,0.07); padding-top: 22px; margin-top: 8px; }
+    .sources-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .source-item { display: flex; align-items: flex-start; gap: 11px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 9px; padding: 11px 13px; text-decoration: none; transition: border-color 0.15s, background 0.15s; }
+    .source-item:hover { border-color: rgba(45,220,124,0.38); background: rgba(45,220,124,0.06); }
+    .source-item.this-week { border-color: rgba(45,220,124,0.18); }
+    .source-icon { font-size: 15px; color: #2ddc7c; margin-top: 1px; flex-shrink: 0; }
+    .source-icon.dim { color: rgba(255,255,255,0.22); }
+    .source-text { flex: 1; min-width: 0; }
+    .source-name { font-size: 12px; font-weight: 600; color: #ffffff; display: block; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .source-desc { font-size: 10.5px; color: rgba(255,255,255,0.35); line-height: 1.45; }
+    .source-ext { font-size: 12px; color: rgba(45,220,124,0.45); flex-shrink: 0; margin-top: 2px; }
+    .week-pill { font-size: 9px; font-family: 'DM Mono', monospace; background: rgba(45,220,124,0.14); color: #2ddc7c; border-radius: 3px; padding: 1px 5px; margin-left: 5px; letter-spacing: 0.04em; vertical-align: middle; }
+
+    .footer-strip { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.07); margin-top: 6px; }
+    .footer-note { font-size: 10px; color: rgba(255,255,255,0.2); font-family: 'DM Mono', monospace; }
+    .footer-link { font-size: 10px; color: rgba(45,220,124,0.45); font-family: 'DM Mono', monospace; text-decoration: none; }
+    .footer-link:hover { color: #2ddc7c; }
+
+    @media (max-width: 560px) {
+      .pave-root { padding: 24px 20px 32px; }
+      .pave-header { flex-direction: column; }
+      .score-col { flex-direction: row; }
+      .pave-score-block, .no-change-badge { min-width: 0; flex: 1; }
+      .ratings-row { flex-wrap: wrap; }
+      .rating-pill { min-width: calc(50% - 5px); }
+      .two-col, .praise-grid, .sources-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<main class="pave-root" role="main">
+  <h1 class="sr-only">Quickbase Pave Weekly Sentiment Report — June 8, 2026</h1>
+
+  <div class="pave-header">
+    <div class="pave-logo-block">
+      <div class="pave-brand">Quickbase · Pave · Weekly Report</div>
+      <div class="pave-title">Sentiment<br>Intelligence Report</div>
+      <div class="pave-subtitle">Week of June 8, 2026 · No new independent coverage this week</div>
+    </div>
+    <div class="score-col">
+      <div class="pave-score-block">
+        <div class="score-label">Net Score</div>
+        <div class="score-number">74<span class="score-denom">/100</span></div>
+        <div class="score-verdict">Cautiously Bullish</div>
+      </div>
+      <div class="no-change-badge">
+        <div class="nc-icon"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+        <div class="nc-text">No change<br>vs. last week</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert-bar">
+    <i class="ti ti-alert-triangle alert-icon" aria-hidden="true"></i>
+    <div class="alert-text"><strong>This week's signal:</strong> No new third-party press or review activity. Two maintenance windows logged — June 6 (completed) and June 10 (upcoming) — both taking Pave offline. Quickbase-published use case blogs continue to accumulate but do not move the independent sentiment score.</div>
+  </div>
+
+  <div class="ratings-row">
+    <div class="rating-pill">
+      <div class="rp-label">G2 Rating</div>
+      <div class="rp-value">4.7<span style="font-size:14px;color:rgba(45,220,124,0.55)">/5</span></div>
+      <div class="rp-sub">46 reviews · held</div>
+    </div>
+    <div class="rating-pill">
+      <div class="rp-label">G2 NPS</div>
+      <div class="rp-value">82</div>
+      <div class="rp-sub">Held</div>
+    </div>
+    <div class="rating-pill">
+      <div class="rp-label">Press Tone</div>
+      <div class="rp-value">—</div>
+      <div class="rp-sub">No new coverage</div>
+    </div>
+    <div class="rating-pill">
+      <div class="rp-label">Use Cases</div>
+      <div class="rp-value">3+</div>
+      <div class="rp-sub">Published since launch</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="bar-section">
+    <div class="section-label">Sentiment by Theme</div>
+    <div class="bar-row">
+      <div class="bar-label">Enterprise governance</div>
+      <div class="bar-track"><div class="bar-fill" style="width:92%"></div></div>
+      <div class="bar-pct">92%<span class="delta nc">—</span></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Ease of use</div>
+      <div class="bar-track"><div class="bar-fill up" style="width:88%"></div></div>
+      <div class="bar-pct">88%<span class="delta up">↑</span></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Pricing clarity</div>
+      <div class="bar-track"><div class="bar-fill" style="width:74%"></div></div>
+      <div class="bar-pct">74%<span class="delta nc">—</span></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Scope of use cases</div>
+      <div class="bar-track"><div class="bar-fill warn" style="width:48%"></div></div>
+      <div class="bar-pct">48%<span class="delta nc">—</span></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Uptime / reliability</div>
+      <div class="bar-track"><div class="bar-fill danger" style="width:38%"></div></div>
+      <div class="bar-pct">38%<span class="delta dn">↓</span></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Agentic AI security</div>
+      <div class="bar-track"><div class="bar-fill danger" style="width:31%"></div></div>
+      <div class="bar-pct">31%<span class="delta nc">—</span></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-label">Top Recurring Issues</div>
+  <div class="two-col">
+    <div class="item-card issues">
+      <div class="item-num">01 <span class="badge-nc">no change</span></div>
+      <div class="item-title">Agentic AI security gaps</div>
+      <div class="item-desc">OWASP Top 10 agentic risks — goal hijack, tool misuse, privilege escalation — not addressed by current guardrails.</div>
+    </div>
+    <div class="item-card issues">
+      <div class="item-num">02 <span class="badge-nc">no change</span></div>
+      <div class="item-title">Narrow acknowledged scope</div>
+      <div class="item-desc">Not suited for complex integrations, mobile-first, or replacing core business systems — Quickbase's own documentation.</div>
+    </div>
+    <div class="item-card flagged issues">
+      <div class="item-num">03 <span class="badge-new">↑ signal</span></div>
+      <div class="item-title">Maintenance downtime frequency</div>
+      <div class="item-desc">Two planned outage windows in one week (June 6 + June 10) take both Pave and the core platform offline. Pattern worth monitoring.</div>
+    </div>
+    <div class="item-card issues">
+      <div class="item-num">04 <span class="badge-nc">no change</span></div>
+      <div class="item-title">The 80% problem persists</div>
+      <div class="item-desc">Independent questions remain about whether AI-generated app logic holds up at production edge cases.</div>
+    </div>
+  </div>
+
+  <div class="section-label">Top Recurring Feature Requests</div>
+  <div class="two-col">
+    <div class="item-card requests">
+      <div class="item-num">01 <span class="badge-nc">no change</span></div>
+      <div class="item-title">Deeper enterprise integrations</div>
+      <div class="item-desc">Native connectors to ERP, CRM, and ITSM systems beyond current third-party options.</div>
+    </div>
+    <div class="item-card requests">
+      <div class="item-num">02 <span class="badge-nc">no change</span></div>
+      <div class="item-title">Mobile-first app support</div>
+      <div class="item-desc">Field teams need mobile-optimized apps — currently an explicitly out-of-scope use case.</div>
+    </div>
+    <div class="item-card requests">
+      <div class="item-num">03 <span class="badge-nc">no change</span></div>
+      <div class="item-title">Built-in QA / testing loop</div>
+      <div class="item-desc">Continuous background contract enforcement during the build cycle, not post-build validation.</div>
+    </div>
+    <div class="item-card requests">
+      <div class="item-num">04 <span class="badge-nc">no change</span></div>
+      <div class="item-title">Richer UI customization</div>
+      <div class="item-desc">More design flexibility beyond no-code templates; modern dashboard aesthetics.</div>
+    </div>
+  </div>
+
+  <div class="section-label">Top Recurring Praise</div>
+  <div class="praise-grid">
+    <div class="praise-card">
+      <i class="ti ti-shield-check praise-icon" aria-hidden="true"></i>
+      <div class="praise-title">Built-in governance</div>
+      <div class="praise-body">SSO, audit trails, role-based access, version rollback — all included from day one.</div>
+    </div>
+    <div class="praise-card reinforced">
+      <i class="ti ti-clock-bolt praise-icon" aria-hidden="true"></i>
+      <div class="praise-title">Speed of creation ↑ reinforced</div>
+      <div class="praise-body">New use case posts: capacity dashboard in 4 hrs, full conference app in 8 hrs, hiring system in similar time.</div>
+    </div>
+    <div class="praise-card">
+      <i class="ti ti-server-off praise-icon" aria-hidden="true"></i>
+      <div class="praise-title">Zero infrastructure lift</div>
+      <div class="praise-body">No database, hosting setup, or third-party stack to manage — everything included.</div>
+    </div>
+    <div class="praise-card">
+      <i class="ti ti-coin praise-icon" aria-hidden="true"></i>
+      <div class="praise-title">Transparent pricing</div>
+      <div class="praise-body">No hidden runtime costs or unpredictable scaling bills unlike most AI builder tools.</div>
+    </div>
+    <div class="praise-card">
+      <i class="ti ti-message-chatbot praise-icon" aria-hidden="true"></i>
+      <div class="praise-title">Plain language to app</div>
+      <div class="praise-body">Prompt, spreadsheet, PDF, or image — builds data model, forms, and logic automatically.</div>
+    </div>
+    <div class="praise-card">
+      <i class="ti ti-building-skyscraper praise-icon" aria-hidden="true"></i>
+      <div class="praise-title">Trusted infrastructure</div>
+      <div class="praise-body">Built on Quickbase's 20+ year enterprise platform — Big Four firms comfortable with data residency.</div>
+    </div>
+  </div>
+
+  <div class="tag-row">
+    <span class="tag pos">enterprise ready</span>
+    <span class="tag pos">governance-first</span>
+    <span class="tag pos">no infrastructure</span>
+    <span class="tag pos">fast build cycle</span>
+    <span class="tag pos">use cases growing</span>
+    <span class="tag neu">narrow scope</span>
+    <span class="tag neu">early stage</span>
+    <span class="tag neg">agentic security gaps</span>
+    <span class="tag neg">no mobile support</span>
+    <span class="tag new">↑ maintenance frequency</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sources-section">
+    <div class="section-label">Sources · Week of June 8</div>
+    <div class="sources-grid">
+      <a class="source-item this-week" href="https://quickbasestatus.status.page/" target="_blank" rel="noopener">
+        <i class="ti ti-alert-circle source-icon" aria-hidden="true"></i>
+        <div class="source-text">
+          <span class="source-name">Quickbase Status Page <span class="week-pill">this week</span></span>
+          <div class="source-desc">June 6 outage + June 10 window · quickbasestatus.status.page</div>
+        </div>
+        <i class="ti ti-external-link source-ext" aria-hidden="true"></i>
+      </a>
+      <a class="source-item this-week" href="https://www.quickbase.com/blog/pave-team-capacity-management-dashboard" target="_blank" rel="noopener">
+        <i class="ti ti-file-text source-icon" aria-hidden="true"></i>
+        <div class="source-text">
+          <span class="source-name">Pave: Team Capacity Dashboard <span class="week-pill">recent</span></span>
+          <div class="source-desc">Use case blog · Quickbase · May 15, 2026</div>
+        </div>
+        <i class="ti ti-external-link source-ext" aria-hidden="true"></i>
+      </a>
+      <a class="source-item this-week" href="https://www.quickbase.com/blog/pave-event-management-app" target="_blank" rel="noopener">
+        <i class="ti ti-file-text source-icon" aria-hidden="true"></i>
+        <div class="source-text">
+          <span class="source-name">Pave: Event Management App <span class="week-pill">recent</span></span>
+          <div class="source-desc">Use case blog · Quickbase · May 5, 2026</div>
+        </div>
+        <i class="ti ti-external-link source-ext" aria-hidden="true"></i>
+      </a>
+      <a class="source-item this-week" href="https://www.quickbase.com/blog/pave-skills-based-hiring-platform" target="_blank" rel="noopener">
+        <i class="ti ti-file-text source-icon" aria-hidden="true"></i>
+        <div class="source-text">
+          <span class="source-name">Pave: Skills-Based Hiring System <span class="week-pill">recent</span></span>
+          <div class="source-desc">Use case blog · Quickbase · May 2026</div>
+        </div>
+        <i class="ti ti-external-link source-ext" aria-hidden="true"></i>
+      </a>
+      <a class="source-item" href="https://thenewstack.io/quickbase-pave-vibe-coding/" target="_blank" rel="noopener">
+        <i class="ti ti-news source-icon dim" aria-hidden="true"></i>
+        <div class="source-text">
+          <span class="source-name">Pave Targets Vibe Coding's 80% Problem</span>
+          <div class="source-desc">Carried forward · The New Stack · Apr 30, 2026</div>
+        </div>
+        <i class="ti ti-external-link source-ext" aria-hidden="true"></i>
+      </a>
+      <a class="source-item" href="https://www.siliconsnark.com/quickbase-wants-to-vibe-code-your-back-office-the-guardrails-are-real/" target="_blank" rel="noopener">
+        <i class="ti ti-news source-icon dim" aria-hidden="true"></i>
+        <div class="source-text">
+          <span class="source-name">Vibe-Code Your Back Office. Guardrails Are Real.</span>
+          <div class="source-desc">Carried forward · SiliconSnark · Apr 28, 2026</div>
+        </div>
+        <i class="ti ti-external-link source-ext" aria-hidden="true"></i>
+      </a>
+      <a class="source-item" href="https://www.g2.com/products/pave/discuss" target="_blank" rel="noopener">
+        <i class="ti ti-star source-icon dim" aria-hidden="true"></i>
+        <div class="source-text">
+          <span class="source-name">Pave Reviews & NPS Score</span>
+          <div class="source-desc">Carried forward · G2 · 46 reviews, NPS 82</div>
+        </div>
+        <i class="ti ti-external-link source-ext" aria-hidden="true"></i>
+      </a>
+      <a class="source-item" href="https://www.globenewswire.com/news-release/2026/04/28/3282723/0/en/quickbase-introduces-pave-a-full-stack-ai-app-builder-for-the-enterprise.html" target="_blank" rel="noopener">
+        <i class="ti ti-speakerphone source-icon dim" aria-hidden="true"></i>
+        <div class="source-text">
+          <span class="source-name">Quickbase Introduces Pave — Press Release</span>
+          <div class="source-desc">Carried forward · GlobeNewswire · Apr 28, 2026</div>
+        </div>
+        <i class="ti ti-external-link source-ext" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="footer-strip">
+    <div class="footer-note">QUICKBASE PAVE · WEEKLY REPORT · JUNE 8, 2026</div>
+    <a class="footer-link" href="https://www.quickbase.com/pave" target="_blank" rel="noopener">quickbase.com/pave ↗</a>
+  </div>
+
+</main>
+</body>
+</html>
